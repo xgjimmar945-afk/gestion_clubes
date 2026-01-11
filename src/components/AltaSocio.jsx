@@ -12,6 +12,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+
 import Alert from "@mui/material/Alert";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -21,59 +22,60 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+
 import Box from "@mui/material/Box";
+import api from "../api";
+
+import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import SaveIcon from "@mui/icons-material/Save";
-import { useNavigate } from "react-router-dom";
-import api from "../api";
 
-export default function AltaClub() {
+export default function AltaSocio() {
   const navigate = useNavigate();
-  const [club, setClub] = useState({
+  const [socio, setSocio] = useState({
     nombre: "",
-    id_rama: "",
-    descripcion: "",
-    direccion: "",
-    fecha_fundacion: "",
-    presupuesto_anual: 0,
-    esta_activo: true,
+    apellido: "",
+    email: "",
+    id_club: "",
+    fecha_nacimiento: "",
+    altura_metros: "",
+    ha_pagado_cuota: false,
   });
   const [isCamposValidos, setIsCamposValidos] = useState({
     nombre: true,
-    id_rama: true,
-    descripcion: true,
-    direccion: true,
-    fecha_fundacion: true,
+    apellido: true,
+    email: true,
+    id_club: true,
   });
 
-  const [rama, setRama] = useState("");
-  const [ramas, setRamas] = useState([]);
+  const [club, setClub] = useState("");
+  const [clubs, setClubs] = useState([]);
   const [isError, setIsError] = useState(null);
 
   useEffect(() => {
-    async function fetchRamas() {
+    async function fetchClubs() {
       try {
-        const respuesta = await api.get("/ramas");
+        let respuesta = await api.get("/clubs");
 
         if (respuesta.ok) {
           const datos = respuesta.datos;
 
-          setRamas(datos);
+          setClubs(datos);
           // Si vienen datos en el array de componentes
           if (datos.length > 0) {
             // Establezco como seleccionado en el SELECT el primero
-            setRama(datos[0].id_rama);
+            setClub(datos[0].id_club);
           }
         } else {
-          setIsError("Hubo un error al obtener las temáticas");
+          setIsError("Hubo un error al obtener los clubs");
         }
       } catch (error) {
-        setIsError("No pudimos hacer la solicitud de las temáticas");
+        setIsError("No pudimos hacer la solicitud de los clubs");
       }
     }
 
-    fetchRamas();
+    fetchClubs();
   }, []);
 
   const [isUpdating, setIsUpdating] = useState(false);
@@ -82,21 +84,21 @@ export default function AltaClub() {
   const [dialogSeverity, setDialogSeverity] = useState("success");
 
   useEffect(() => {
-    async function fetchCreateClub() {
+    async function fetchCreateSocio() {
       try {
-        const respuesta = await api.post("/clubs", club);
+        let respuesta = await api.post("/socios", socio);
 
         if (respuesta.ok) {
-          setDialogMessage(respuesta.mensaje); // Mensaje
-          setDialogSeverity("success"); // Color verde
-          setOpenDialog(true); // Abrir el diálogo
+          setDialogMessage(respuesta.mensaje);
+          setDialogSeverity("success");
+          setOpenDialog(true);
         } else {
-          setDialogMessage(respuesta.mensaje || "Error del servidor"); // Mensaje
-          setDialogSeverity("error"); // Color rojo
-          setOpenDialog(true); // Abrir el diálogo
+          setDialogMessage(respuesta.mensaje || "Error del servidor");
+          setDialogSeverity("error");
+          setOpenDialog(true);
         }
       } catch (e) {
-        console.error("Error (catch):", e); // para debugging
+        console.error("Error (catch):", e);
         setDialogMessage(`Error de conexión: ${e.message || "desconocido"}`);
         setDialogSeverity("error");
         setOpenDialog(true);
@@ -105,7 +107,7 @@ export default function AltaClub() {
       setIsUpdating(false);
     }
 
-    if (isUpdating) fetchCreateClub();
+    if (isUpdating) fetchCreateSocio();
   }, [isUpdating]);
 
   const handleChange = (event) => {
@@ -113,8 +115,8 @@ export default function AltaClub() {
       event.target.type === "checkbox"
         ? event.target.checked
         : event.target.value;
-    setClub({
-      ...club,
+    setSocio({
+      ...socio,
       [event.target.name]: value,
     });
   };
@@ -137,50 +139,55 @@ export default function AltaClub() {
     let isValid = true;
     let objetoValidacion = {
       nombre: true,
-      descripcion: true,
-      direccion: true,
-      fecha_fundacion: true,
+      apellido: true,
+      email: true,
     };
 
-    // Validacion del nombre (mínimo 3 caracteres, máximo 100)
-    if (club.nombre.trim().length < 3 || club.nombre.trim().length > 100) {
+    // Funcion para comprobar que no hayan numeros en el texto
+    function tiene_numeros(texto) {
+      return /\d/.test(texto);
+    }
+
+    // Funcion para validar formato de email
+    function validar_email(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    }
+
+    // Validacion del nombre (mínimo 2 caracteres, máximo 50, sin números)
+    if (
+      socio.nombre.trim().length < 2 ||
+      socio.nombre.trim().length > 50 ||
+      tiene_numeros(socio.nombre)
+    ) {
       isValid = false;
       objetoValidacion.nombre = false;
     }
 
-    // Validacion de la fecha de fundacion
-    if (!club.fecha_fundacion) {
-      isValid = false;
-      objetoValidacion.fecha_fundacion = false;
-    } else {
-      // Verificar que la fecha no sea futura
-      const fechaSeleccionada = new Date(club.fecha_fundacion);
-      const hoy = new Date();
-      if (fechaSeleccionada > hoy) {
-        isValid = false;
-        objetoValidacion.fecha_fundacion = false;
-      }
-    }
-
-    // Validacion de la descripcion (mínimo 10 caracteres, máximo 500)
+    // Validacion del apellido (mínimo 2 caracteres, máximo 50, sin números)
     if (
-      club.descripcion.trim().length < 10 ||
-      club.descripcion.trim().length > 500
+      socio.apellido.trim().length < 2 ||
+      socio.apellido.trim().length > 50 ||
+      tiene_numeros(socio.apellido)
     ) {
       isValid = false;
-      objetoValidacion.descripcion = false;
+      objetoValidacion.apellido = false;
     }
 
-    // Validacion de la direccion (mínimo 10 caracteres, máximo 255)
-    if (
-      club.direccion.trim().length < 10 ||
-      club.direccion.trim().length > 255
-    ) {
+    // Validacion del email (formato válido y longitud máxima)
+    if (!validar_email(socio.email) || socio.email.length > 100) {
       isValid = false;
-      objetoValidacion.direccion = false;
+      objetoValidacion.email = false;
     }
 
-    if (club.presupuesto_anual < 0) {
+    if (!socio.fecha_nacimiento) {
+      isValid = false;
+    }
+
+    if (
+      socio.altura_metros &&
+      (socio.altura_metros < 0 || socio.altura_metros > 3)
+    ) {
       isValid = false;
     }
 
@@ -200,7 +207,7 @@ export default function AltaClub() {
             align="center"
             sx={{ mb: 3 }}
           >
-            Alta de Club
+            Alta de Socio
           </Typography>
 
           <Grid container spacing={3}>
@@ -213,122 +220,123 @@ export default function AltaClub() {
                 label="Nombre"
                 name="nombre"
                 type="text"
-                maxLength="100"
-                value={club.nombre}
+                maxLength="50"
+                value={socio.nombre}
                 onChange={handleChange}
                 error={!isCamposValidos.nombre}
                 helperText={
                   !isCamposValidos.nombre &&
-                  "El nombre debe tener entre 3 y 100 caracteres."
+                  "El nombre debe tener entre 2 y 50 caracteres y no puede contener números."
                 }
               />
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ minWidth: 120 }}>
                 <FormControl fullWidth>
-                  <InputLabel id="rama">Rama</InputLabel>
+                  <InputLabel id="club">Club</InputLabel>
                   <Select
-                    labelId="rama"
-                    id="rama"
-                    name="id_rama"
-                    value={club.id_rama}
-                    label="Rama"
+                    labelId="club"
+                    id="club"
+                    name="id_club"
+                    value={socio.id_club}
+                    label="Club"
                     onChange={handleChange}
                   >
-                    {ramas.map((rama) => (
-                      <MenuItem key={rama.id_rama} value={rama.id_rama}>
-                        {rama.nombre_rama}
+                    {clubs.map((club) => (
+                      <MenuItem key={club.id_club} value={club.id_club}>
+                        {club.nombre}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="apellido"
+                label="Apellido"
+                name="apellido"
+                type="text"
+                maxLength="50"
+                value={socio.apellido}
+                onChange={handleChange}
+                error={!isCamposValidos.apellido}
+                helperText={
+                  !isCamposValidos.apellido &&
+                  "El apellido debe tener entre 2 y 50 caracteres y no puede contener números."
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                type="text"
+                maxLength="500"
+                value={socio.email}
+                onChange={handleChange}
+                error={!isCamposValidos.email}
+                helperText={
+                  !isCamposValidos.email &&
+                  "Ingrese un email válido (máximo 100 caracteres)."
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
               <LocalizationProvider
                 dateAdapter={AdapterDayjs}
                 adapterLocale="es"
               >
                 <DatePicker
-                  label="Fecha de Fundación"
-                  name="fecha_fundacion"
+                  label="Fecha de Nacimiento"
+                  name="fecha_nacimiento"
                   value={
-                    club.fecha_fundacion ? dayjs(club.fecha_fundacion) : null
+                    socio.fecha_nacimiento
+                      ? dayjs(socio.fecha_nacimiento)
+                      : null
                   }
                   disableFuture
-                  slotProps={{ textField: { fullWidth: true } }}
                   onChange={(newValue) => {
-                    setClub({
-                      ...club,
-                      fecha_fundacion: newValue
+                    setSocio({
+                      ...socio,
+                      fecha_nacimiento: newValue
                         ? newValue.format("YYYY-MM-DD")
                         : "",
                     });
                   }}
+                  slotProps={{ textField: { fullWidth: true } }}
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="presupuesto_anual"
-                label="Presupuesto Anual"
-                name="presupuesto_anual"
+                id="altura_metros"
+                label="Altura (metros)"
+                name="altura_metros"
                 type="number"
-                value={club.presupuesto_anual}
+                value={socio.altura_metros}
                 onChange={handleChange}
-                inputProps={{ min: "0", step: "0.01" }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="descripcion"
-                label="Descripción"
-                name="descripcion"
-                type="text"
-                multiline
-                rows={4}
-                maxLength="2000"
-                value={club.descripcion}
-                onChange={handleChange}
-                error={!isCamposValidos.descripcion}
-                helperText={
-                  !isCamposValidos.descripcion &&
-                  "La descripción debe tener entre 10 y 500 caracteres."
-                }
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="direccion"
-                label="Direccion"
-                name="direccion"
-                type="text"
-                maxLength="255"
-                value={club.direccion}
-                onChange={handleChange}
-                error={!isCamposValidos.direccion}
-                helperText={
-                  !isCamposValidos.direccion &&
-                  "La dirección debe tener entre 10 y 255 caracteres."
-                }
+                inputProps={{ min: "0", max: "3", step: "0.01" }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={club.esta_activo}
+                    checked={socio.ha_pagado_cuota}
                     onChange={handleChange}
-                    name="esta_activo"
+                    name="ha_pagado_cuota"
                     color="primary"
                   />
                 }
-                label="Está Activo"
+                label="Ha Pagado Cuota"
               />
             </Grid>
           </Grid>
