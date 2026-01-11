@@ -62,9 +62,7 @@ export default function AltaSocio() {
           const datos = respuesta.datos;
 
           setClubs(datos);
-          // Si vienen datos en el array de componentes
           if (datos.length > 0) {
-            // Establezco como seleccionado en el SELECT el primero
             setClub(datos[0].id_club);
           }
         } else {
@@ -103,7 +101,6 @@ export default function AltaSocio() {
         setDialogSeverity("error");
         setOpenDialog(true);
       }
-      // Pase lo que pase hemos terminado el proceso de actualización
       setIsUpdating(false);
     }
 
@@ -150,8 +147,8 @@ export default function AltaSocio() {
 
     // Funcion para validar formato de email
     function validar_email(email) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
+      const res = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return res.test(email);
     }
 
     // Validacion del nombre (mínimo 2 caracteres, máximo 50, sin números)

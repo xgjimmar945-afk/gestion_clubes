@@ -60,9 +60,9 @@ export default function AltaClub() {
           const datos = respuesta.datos;
 
           setRamas(datos);
-          // Si vienen datos en el array de componentes
+          
           if (datos.length > 0) {
-            // Establezco como seleccionado en el SELECT el primero
+            
             setRama(datos[0].id_rama);
           }
         } else {
@@ -87,21 +87,19 @@ export default function AltaClub() {
         const respuesta = await api.post("/clubs", club);
 
         if (respuesta.ok) {
-          setDialogMessage(respuesta.mensaje); // Mensaje
-          setDialogSeverity("success"); // Color verde
-          setOpenDialog(true); // Abrir el diálogo
+          setDialogMessage(respuesta.mensaje); 
+          setDialogSeverity("success"); 
+          setOpenDialog(true); 
         } else {
-          setDialogMessage(respuesta.mensaje || "Error del servidor"); // Mensaje
-          setDialogSeverity("error"); // Color rojo
-          setOpenDialog(true); // Abrir el diálogo
+          setDialogMessage(respuesta.mensaje || "Error del servidor"); 
+          setOpenDialog(true); 
         }
       } catch (e) {
-        console.error("Error (catch):", e); // para debugging
+        console.error("Error (catch):", e); 
         setDialogMessage(`Error de conexión: ${e.message || "desconocido"}`);
         setDialogSeverity("error");
         setOpenDialog(true);
       }
-      // Pase lo que pase hemos terminado el proceso de actualización
       setIsUpdating(false);
     }
 

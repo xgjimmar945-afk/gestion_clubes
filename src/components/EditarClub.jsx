@@ -58,9 +58,7 @@ export default function EditarClub() {
           const datos = respuesta.datos;
 
           setRamas(datos);
-          // Si vienen datos en el array de componentes
           if (datos.length > 0) {
-            // Establezco como seleccionado en el SELECT el primero
             setRama(datos[0].id_rama);
           }
         } else {

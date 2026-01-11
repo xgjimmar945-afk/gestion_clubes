@@ -30,10 +30,10 @@ function ListadoSocios() {
 
           setClubs(datos);
         } else {
-          // setIsError("Hubo un error al obtener los clubs");
+          setError("Hubo un error al obtener los clubs");
         }
       } catch {
-        // setIsError("No pudimos hacer la solicitud de los clubs");
+        setError("No pudimos hacer la solicitud de los clubs");
       }
     }
 

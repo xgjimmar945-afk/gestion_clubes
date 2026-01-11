@@ -32,8 +32,10 @@ function App() {
     [mode]
   );
 
+  // Contexto para el tema, con esto se puede cambiar el tema
   const theme = useMemo(() => getTheme(mode), [mode]);
 
+  // Rutas
   const router = createBrowserRouter([
     {
       path: "/",
@@ -76,7 +78,9 @@ function App() {
     },
   ]);
 
+
   return (
+    // Contexto para el modo oscuro
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />

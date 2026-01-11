@@ -119,7 +119,7 @@ function LandingPage() {
             <Typography variant="h3" gutterBottom color="primary">
               Bienvenido a Clubes de Ciencia
             </Typography>
-            <Typography variant="body1" paragraph>
+            <Typography variant="body1">
               Somos una comunidad apasionada por la ciencia y la tecnología.
               Nuestra misión es fomentar la curiosidad y el aprendizaje a través
               de la experimentación y la colaboración.

@@ -49,7 +49,7 @@ function Navbar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar>
-          {/* Menú para resolución xs  */}
+          {/* Menú para resolución xs */}
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -125,7 +125,7 @@ function Navbar() {
             </Menu>
           </Box>
 
-          {/* Logo y nombre de la web */}
+          {/*  */}
           <ScienceTwoToneIcon />
           <Typography
             variant="h6"

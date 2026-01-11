@@ -1,14 +1,15 @@
 import { createTheme } from "@mui/material/styles";
 
+// Funcion que crea el tema segun el modo (light o dark) para todos los componentes
 export const getTheme = (mode) =>
     createTheme({
         palette: {
             mode,
             primary: {
-                main: "#002147", // Deep Blue (Depth/Space)
+                main: "#002147",
             },
             secondary: {
-                main: "#00ACC1", // Teal/Cyan (Science/Cleanliness)
+                main: "#00ACC1",
             },
             background: {
                 default: mode === "light" ? "#f5f5f5" : "#121212",

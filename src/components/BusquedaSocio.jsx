@@ -12,7 +12,6 @@ import Button from "@mui/material/Button";
 
 import { useState, useEffect } from "react";
 import api from "../api";
-import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -26,6 +25,7 @@ export default function BusquedaSocio() {
   const [clubs, setClubs] = useState([]);
 
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     async function fetchClubs() {
@@ -37,10 +37,10 @@ export default function BusquedaSocio() {
 
           setClubs(datos);
         } else {
-          // setIsError("Hubo un error al obtener las temáticas");
+          setIsError("Hubo un error al obtener las temáticas");
         }
       } catch {
-        // setIsError("No pudimos hacer la solicitud de las temáticas");
+        setIsError("No pudimos hacer la solicitud de las temáticas");
       }
     }
 
@@ -62,10 +62,10 @@ export default function BusquedaSocio() {
 
           setSocios(datos);
         } else {
-          // setIsError("Hubo un error al obtener los clubs");
+          setIsError("Hubo un error al obtener los clubs");
         }
       } catch {
-        // setIsError("No pudimos hacer la solicitud de los clubs");
+        setIsError("No pudimos hacer la solicitud de los clubs");
       }
     }
 

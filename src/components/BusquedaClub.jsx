@@ -34,9 +34,7 @@ export default function BusquedaClub() {
           const datos = respuesta.datos;
 
           setRamas(datos);
-          // Si vienen datos en el array de componentes
           if (datos.length > 0) {
-            // Establezco como seleccionado en el SELECT el primero
             setRama(datos[0].id_rama);
           }
         } else {
@@ -67,9 +65,7 @@ export default function BusquedaClub() {
           const datos = respuesta.datos;
 
           setClubs(datos);
-          // Si vienen datos en el array de componentes
           if (datos.length > 0) {
-            // Establezco como seleccionado en el SELECT el primero
             setClub(datos[0].id_club);
           }
         } else {

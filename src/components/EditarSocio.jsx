@@ -61,9 +61,7 @@ export default function EditarSocio() {
           const datos = respuesta.datos;
 
           setClubs(datos);
-          // Si vienen datos en el array de componentes
           if (datos.length > 0) {
-            // Establezco como seleccionado en el SELECT el primero
             setClub(datos[0].id_club);
           }
         } else {
