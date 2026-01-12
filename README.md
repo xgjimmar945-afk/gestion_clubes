@@ -1,16 +1,47 @@
-# React + Vite
+# Clubes Ciencia Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend para el proyecto de gestión de Clubes de Ciencia.
 
-Currently, two official plugins are available:
+## Enlace al repositorio de GitHub
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[https://github.com/xgjimmar945-afk/gestion_clubes.git](https://github.com/xgjimmar945-afk/gestion_clubes.git)
 
-## React Compiler
+## Datos para la conexión a la base de datos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Nombre de la base de datos:** `clubes_ciencia`
+- **Usuario:** `root`
+- **Contraseña:** `test`
+- **Host:** `localhost`
+- **Puerto:** `3306`
 
-## Expanding the ESLint configuration
+## Ejecución del Proyecto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Backend
+
+1.  Navegar al directorio del backend:
+    ```bash
+    cd ../clubes_ciencia_backend
+    ```
+2.  Instalar dependencias:
+    ```bash
+    npm install
+    ```
+3.  Iniciar el servidor de desarrollo:
+    ```bash
+    npm run dev
+    ```
+
+### Frontend
+
+1.  :
+    ```bash
+    cd clubes_ciencia_frontend
+    ```
+2.  :
+    ```bash
+    npm install
+    ```
+3.  :
+    ```bash
+    npm run dev
+    ```
