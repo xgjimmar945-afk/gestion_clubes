@@ -12,6 +12,7 @@ import ListadoSocios from "./components/ListadoSocios";
 import EditarSocio from "./components/EditarSocio";
 import BusquedaClub from "./components/BusquedaClub";
 import BusquedaSocio from "./components/BusquedaSocio";
+import ListadoSociosFecha from "./components/ListadoSociosFecha";
 import { ColorModeContext } from "./context/ColorModeContext";
 import { getTheme } from "./theme";
 
@@ -74,10 +75,13 @@ function App() {
           path: "/socios/buscar",
           element: <BusquedaSocio />,
         },
+        {
+          path: "/socios/fecha",
+          element: <ListadoSociosFecha />,
+        },
       ],
     },
   ]);
-
 
   return (
     // Contexto para el modo oscuro

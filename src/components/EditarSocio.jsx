@@ -216,7 +216,7 @@ export default function EditarSocio() {
           </Typography>
 
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <TextField
                 required
                 fullWidth
@@ -235,7 +235,25 @@ export default function EditarSocio() {
                 }
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
+              <TextField
+                required
+                fullWidth
+                id="apellido"
+                label="Apellido"
+                name="apellido"
+                type="text"
+                maxLength="50"
+                value={socio.apellido}
+                onChange={handleChange}
+                error={!isCamposValidos.apellido}
+                helperText={
+                  !isCamposValidos.apellido &&
+                  "El apellido debe tener entre 2 y 50 caracteres y no puede contener números."
+                }
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
               <Box sx={{ minWidth: 120 }}>
                 <FormControl fullWidth>
                   <InputLabel id="club">Club</InputLabel>
@@ -256,26 +274,7 @@ export default function EditarSocio() {
                 </FormControl>
               </Box>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="apellido"
-                label="Apellido"
-                name="apellido"
-                type="text"
-                maxLength="50"
-                value={socio.apellido}
-                onChange={handleChange}
-                error={!isCamposValidos.apellido}
-                helperText={
-                  !isCamposValidos.apellido &&
-                  "El apellido debe tener entre 2 y 50 caracteres y no puede contener números."
-                }
-              />
-            </Grid>
-
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <TextField
                 required
                 fullWidth
@@ -293,7 +292,7 @@ export default function EditarSocio() {
                 }
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <LocalizationProvider
                 dateAdapter={AdapterDayjs}
                 adapterLocale="es"
@@ -319,7 +318,7 @@ export default function EditarSocio() {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 id="altura_metros"

@@ -15,7 +15,7 @@ export default function BotonEditar( {ruta, id} ) {
     <>
       <Button
         variant="contained"
-        color="error"
+        color="primary"
         onClick={() => handleEditar()}
       >
         <EditIcon />

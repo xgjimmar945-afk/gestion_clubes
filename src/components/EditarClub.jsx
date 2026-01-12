@@ -207,7 +207,7 @@ export default function EditarClub() {
         </Typography>
 
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <TextField
               required
               fullWidth
@@ -226,7 +226,7 @@ export default function EditarClub() {
               }
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth>
                 <InputLabel id="rama">Rama</InputLabel>
@@ -247,7 +247,7 @@ export default function EditarClub() {
               </FormControl>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
               <DatePicker
                 label="Fecha de Fundación"
@@ -268,7 +268,7 @@ export default function EditarClub() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               id="presupuesto_anual"

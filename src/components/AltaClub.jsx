@@ -60,9 +60,8 @@ export default function AltaClub() {
           const datos = respuesta.datos;
 
           setRamas(datos);
-          
+
           if (datos.length > 0) {
-            
             setRama(datos[0].id_rama);
           }
         } else {
@@ -87,15 +86,15 @@ export default function AltaClub() {
         const respuesta = await api.post("/clubs", club);
 
         if (respuesta.ok) {
-          setDialogMessage(respuesta.mensaje); 
-          setDialogSeverity("success"); 
-          setOpenDialog(true); 
+          setDialogMessage(respuesta.mensaje);
+          setDialogSeverity("success");
+          setOpenDialog(true);
         } else {
-          setDialogMessage(respuesta.mensaje || "Error del servidor"); 
-          setOpenDialog(true); 
+          setDialogMessage(respuesta.mensaje || "Error del servidor");
+          setOpenDialog(true);
         }
       } catch (e) {
-        console.error("Error (catch):", e); 
+        console.error("Error (catch):", e);
         setDialogMessage(`Error de conexión: ${e.message || "desconocido"}`);
         setDialogSeverity("error");
         setOpenDialog(true);
@@ -202,7 +201,7 @@ export default function AltaClub() {
           </Typography>
 
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <TextField
                 required
                 fullWidth
@@ -221,7 +220,7 @@ export default function AltaClub() {
                 }
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <Box sx={{ minWidth: 120 }}>
                 <FormControl fullWidth>
                   <InputLabel id="rama">Rama</InputLabel>
@@ -242,7 +241,7 @@ export default function AltaClub() {
                 </FormControl>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <LocalizationProvider
                 dateAdapter={AdapterDayjs}
                 adapterLocale="es"
@@ -266,7 +265,7 @@ export default function AltaClub() {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 id="presupuesto_anual"

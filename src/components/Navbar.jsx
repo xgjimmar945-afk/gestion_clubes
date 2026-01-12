@@ -87,7 +87,7 @@ function Navbar() {
                 </Link>
               </MenuItem>
               <MenuItem onClick={handleCloseNavMenu}>
-                <Link to="/clubs" style={linkStyle} >
+                <Link to="/clubs" style={linkStyle}>
                   <Typography sx={{ textAlign: "center" }}>
                     Listado de Clubes
                   </Typography>
@@ -120,6 +120,13 @@ function Navbar() {
                 <Link to="/socios/buscar" style={linkStyle}>
                   <Typography sx={{ textAlign: "center" }}>
                     Buscar Socios
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Link to="/socios/fecha" style={linkStyle}>
+                  <Typography sx={{ textAlign: "center" }}>
+                    Listado por Fechas
                   </Typography>
                 </Link>
               </MenuItem>
@@ -233,6 +240,13 @@ function Navbar() {
                 <Link to="/socios/buscar" style={linkStyle}>
                   <Typography sx={{ textAlign: "center" }}>
                     Buscar Socios
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Link to="/socios/fecha" style={linkStyle}>
+                  <Typography sx={{ textAlign: "center" }}>
+                    Listado por Fechas
                   </Typography>
                 </Link>
               </MenuItem>
