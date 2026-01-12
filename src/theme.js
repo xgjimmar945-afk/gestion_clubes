@@ -6,10 +6,10 @@ export const getTheme = (mode) =>
         palette: {
             mode,
             primary: {
-                main: "#002147",
+                main: mode === "light" ? "#002147" : "#095dbcff",
             },
             secondary: {
-                main: "#00ACC1",
+                main: mode === "light" ? "#00ACC1" : "#00ACC1",
             },
             background: {
                 default: mode === "light" ? "#f5f5f5" : "#121212",

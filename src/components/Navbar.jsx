@@ -18,6 +18,7 @@ import { Link } from "react-router";
 import Divider from "@mui/material/Divider";
 import ListSubheader from "@mui/material/ListSubheader";
 import { ColorModeContext } from "../context/ColorModeContext";
+
 function Navbar() {
   const [anclaMenuClubes, setAnclaMenuClubes] = React.useState(null);
   const [anclaMenuSocios, setAnclaMenuSocios] = React.useState(null);
@@ -43,7 +44,7 @@ function Navbar() {
     setAnclaMenuXS(null);
   };
 
-  const linkStyle = { color: "black", textDecoration: "none" };
+  const linkStyle = { color: "primary", textDecoration: "none" };
 
   return (
     <AppBar position="static">
@@ -53,8 +54,8 @@ function Navbar() {
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="menu movies db resolucion xs"
-              aria-controls="menu-appbar"
+              aria-label="menu clubes resolucion xs"
+              aria-controls="menu-appbar-xs"
               aria-haspopup="true"
               onClick={handleClickMenuXS}
               color="inherit"
@@ -86,7 +87,7 @@ function Navbar() {
                 </Link>
               </MenuItem>
               <MenuItem onClick={handleCloseNavMenu}>
-                <Link to="/clubs" style={linkStyle}>
+                <Link to="/clubs" style={linkStyle} >
                   <Typography sx={{ textAlign: "center" }}>
                     Listado de Clubes
                   </Typography>
