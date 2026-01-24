@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: App.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: App.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Componente raíz de la aplicación que configura el enrutamiento,
+ * el sistema de temas (claro/oscuro) y los providers globales.
+ */
+
+// Importación de dependencias de React y hooks
+import React, { useState, useMemo } from "react";
+import { RouterProvider } from "react-router-dom";
+import { createBrowserRouter } from "react-router";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+// Importación de componentes de la aplicación
+import LandingPage from "./components/LandingPage";
+import AltaClub from "./components/AltaClub";
+import AltaSocio from "./components/AltaSocio";
+import ListadoClubs from "./components/ListadoClubs";
+import ListadoSocios from "./components/ListadoSocios";
+import EditarSocio from "./components/EditarSocio";
+import BusquedaClub from "./components/BusquedaClub";
+import BusquedaSocio from "./components/BusquedaSocio";
+import ListadoSociosFecha from "./components/ListadoSociosFecha";
+import GraficaClubs from "./components/GraficaClubs";
+import EditarClub from "./components/EditarClub";
+
+// Importación de páginas
+import Home from "./pages/Home";
+
+// Importación de contexto y configuración de tema
+import { ColorModeContext } from "./context/ColorModeContext";
+import { getTheme } from "./theme";
+
+/**
+ * Componente principal de la aplicación.
+ * Gestiona el estado del tema (claro/oscuro), configura el enrutamiento
+ * y proporciona los contextos necesarios para toda la aplicación.
+ *
+ * @component
+ * @returns {JSX.Element} Aplicación completa con providers y enrutamiento configurado
+ */
+function App() {
+  // Estado para controlar el modo de color (light/dark)
+  const [mode, setMode] = useState("light");
+
+  /**
+   * Objeto memoizado que proporciona la función para alternar entre modo claro y oscuro.
+   * Se memoiza para evitar recrear el objeto en cada render, optimizando el rendimiento.
+   *
+   * @type {{toggleColorMode: Function, mode: string}}
+   */
+  const colorMode = useMemo(
+    () => ({
+      /**
+       * Alterna entre modo claro y oscuro
+       */
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+      },
+      mode,
+    }),
+    [mode],
+  );
+
+  /**
+   * Tema de Material UI generado dinámicamente basado en el modo actual.
+   * Se memoiza para evitar regenerar el tema en cada render.
+   */
+  const theme = useMemo(() => getTheme(mode), [mode]);
+
+  /**
+   * Configuración de rutas de la aplicación usando React Router v6.
+   * Estructura:
+   * - "/" (Home) - Layout principal con Navbar y Footer
+   *   - "/" (index) - Landing page
+   *   - "/clubs/*" - Rutas relacionadas con clubes (crear, listar, editar, buscar, gráfica)
+   *   - "/socios/*" - Rutas relacionadas con socios (crear, listar, editar, buscar, filtrar por fecha)
+   */
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      Component: Home,
+      children: [
+        // Ruta raíz - Landing page
+        { index: true, Component: LandingPage },
+
+        // Rutas de Clubes
+        {
+          path: "/clubs/new",
+          element: &lt;AltaClub />,
+        },
+        {
+          path: "/clubs",
+          element: &lt;ListadoClubs />,
+        },
+        {
+          path: "/clubs/editar/:id",
+          element: &lt;EditarClub />,
+        },
+        {
+          path: "/clubs/buscar",
+          element: &lt;BusquedaClub />,
+        },
+        {
+          path: "/clubs/graph",
+          element: &lt;GraficaClubs />,
+        },
+
+        // Rutas de Socios
+        {
+          path: "/socios/new",
+          element: &lt;AltaSocio />,
+        },
+        {
+          path: "/socios",
+          element: &lt;ListadoSocios />,
+        },
+        {
+          path: "/socios/editar/:id",
+          element: &lt;EditarSocio />,
+        },
+        {
+          path: "/socios/buscar",
+          element: &lt;BusquedaSocio />,
+        },
+        {
+          path: "/socios/fecha",
+          element: &lt;ListadoSociosFecha />,
+        },
+      ],
+    },
+  ]);
+
+  return (
+    // Provider del contexto de modo de color (permite a componentes hijos cambiar el tema)
+    &lt;ColorModeContext.Provider value={colorMode}>
+      {/* Provider del tema de Material UI */}
+      &lt;ThemeProvider theme={theme}>
+        {/* CssBaseline normaliza los estilos CSS entre navegadores */}
+        &lt;CssBaseline />
+        {/* Router principal de la aplicación */}
+        &lt;RouterProvider router={router} />
+      &lt;/ThemeProvider>
+    &lt;/ColorModeContext.Provider>
+  );
+}
+
+export default App;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#App">App</a></li><li><a href="global.html#ColorModeContext">ColorModeContext</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ListadoClubs">ListadoClubs</a></li><li><a href="global.html#api">api</a></li><li><a href="global.html#generatePDF">generatePDF</a></li><li><a href="global.html#getTheme">getTheme</a></li><li><a href="global.html#toggleColorMode">toggleColorMode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jan 24 2026 14:46:28 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

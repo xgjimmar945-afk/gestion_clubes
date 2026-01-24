@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/AltaClub.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/AltaClub.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Componente para dar de alta un nuevo club en el sistema.
+ * Proporciona un formulario completo con validaciones para crear clubes.
+ */
+
+import { useState, useEffect } from "react";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import Button from "@mui/material/Button";
+
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Alert from "@mui/material/Alert";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import SaveIcon from "@mui/icons-material/Save";
+import { useNavigate } from "react-router-dom";
+import api from "../api";
+
+/**
+ * Componente de formulario para dar de alta un nuevo club.
+ *
+ * Funcionalidades:
+ * - Formulario con validaciones en tiempo real
+ * - Selección de rama/temática desde el backend
+ * - Selector de fecha con restricción de fechas futuras
+ * - Validación de campos obligatorios y longitudes
+ * - Diálogo de confirmación con resultado de la operación
+ * - Navegación automática tras éxito
+ *
+ * @component
+ * @returns {JSX.Element} Formulario de alta de club
+ */
+export default function AltaClub() {
+  // Hook de navegación para redireccionar tras operaciones exitosas
+  const navigate = useNavigate();
+
+  /**
+   * Estado del club que se está creando.
+   * Contiene todos los campos del formulario.
+   * @type {Object}
+   */
+  const [club, setClub] = useState({
+    nombre: "",
+    id_rama: "",
+    descripcion: "",
+    direccion: "",
+    fecha_fundacion: "",
+    presupuesto_anual: 0,
+    esta_activo: true,
+  });
+
+  /**
+   * Estado de validación de cada campo del formulario.
+   * Se actualiza al intentar enviar el formulario.
+   * @type {Object}
+   */
+  const [isCamposValidos, setIsCamposValidos] = useState({
+    nombre: true,
+    id_rama: true,
+    descripcion: true,
+    direccion: true,
+    fecha_fundacion: true,
+  });
+
+  // Estado para la rama seleccionada actualmente
+  const [rama, setRama] = useState("");
+  // Lista de ramas/temáticas disponibles obtenidas del backend
+  const [ramas, setRamas] = useState([]);
+  // Estado para manejar errores de carga
+  const [isError, setIsError] = useState(null);
+
+  /**
+   * Effect para cargar las ramas/temáticas disponibles al montar el componente.
+   * Se ejecuta una sola vez al inicio.
+   */
+  useEffect(() => {
+    /**
+     * Función asíncrona para obtener las ramas desde el backend.
+     * Actualiza el estado de ramas y selecciona la primera por defecto.
+     */
+    async function fetchRamas() {
+      try {
+        const respuesta = await api.get("/ramas");
+
+        if (respuesta.ok) {
+          const datos = respuesta.datos;
+
+          setRamas(datos);
+
+          // Seleccionar automáticamente la primera rama si existe
+          if (datos.length > 0) {
+            setRama(datos[0].id_rama);
+          }
+        } else {
+          setIsError("Hubo un error al obtener las temáticas");
+        }
+      } catch (error) {
+        setIsError("No pudimos hacer la solicitud de las temáticas");
+      }
+    }
+
+    fetchRamas();
+  }, []);
+
+  // Estado para controlar si se está enviando la petición al servidor
+  const [isUpdating, setIsUpdating] = useState(false);
+  // Estado para controlar la visibilidad del diálogo de resultado
+  const [openDialog, setOpenDialog] = useState(false);
+  // Mensaje a mostrar en el diálogo
+  const [dialogMessage, setDialogMessage] = useState("");
+  // Severidad del diálogo (success, error, warning, info)
+  const [dialogSeverity, setDialogSeverity] = useState("success");
+
+  /**
+   * Effect para crear el club cuando isUpdating cambia a true.
+   * Se ejecuta después de que la validación sea exitosa.
+   */
+  useEffect(() => {
+    /**
+     * Función asíncrona para enviar los datos del club al backend.
+     * Maneja la respuesta y muestra el diálogo correspondiente.
+     */
+    async function fetchCreateClub() {
+      try {
+        const respuesta = await api.post("/clubs", club);
+
+        if (respuesta.ok) {
+          setDialogMessage(respuesta.mensaje);
+          setDialogSeverity("success");
+          setOpenDialog(true);
+        } else {
+          setDialogMessage(respuesta.mensaje || "Error del servidor");
+          setOpenDialog(true);
+        }
+      } catch (e) {
+        console.error("Error (catch):", e);
+        setDialogMessage(`Error de conexión: ${e.message || "desconocido"}`);
+        setDialogSeverity("error");
+        setOpenDialog(true);
+      }
+      // Resetear el estado de actualización
+      setIsUpdating(false);
+    }
+
+    // Solo ejecutar si isUpdating es true
+    if (isUpdating) fetchCreateClub();
+  }, [isUpdating]);
+
+  /**
+   * Manejador de cambios en los campos del formulario.
+   * Actualiza el estado del club con el nuevo valor.
+   *
+   * @param {Event} event - Evento de cambio del input
+   */
+  const handleChange = (event) => {
+    // Determinar el valor según el tipo de input (checkbox vs otros)
+    const value =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+    setClub({
+      ...club,
+      [event.target.name]: value,
+    });
+  };
+
+  /**
+   * Manejador del clic en el botón de enviar.
+   * Valida los datos antes de iniciar el proceso de creación.
+   *
+   * @param {Event} event - Evento de clic del botón
+   */
+  const handleClick = (event) => {
+    // Prevenir múltiples envíos simultáneos
+    if (isUpdating) return;
+
+    // Solo proceder si la validación es exitosa
+    if (validarDatos()) {
+      setIsUpdating(true);
+    }
+  };
+
+  /**
+   * Manejador del cierre del diálogo de resultado.
+   * Si la operación fue exitosa, navega a la página principal.
+   */
+  function handleDialogClose() {
+    setOpenDialog(false);
+
+    // Redirigir a la página principal solo si la operación fue exitosa
+    if (dialogSeverity === "success") navigate("/");
+  }
+
+  /**
+   * Valida todos los campos del formulario antes de enviar.
+   *
+   * Reglas de validación:
+   * - Nombre: entre 3 y 100 caracteres
+   * - Descripción: entre 10 y 500 caracteres
+   * - Dirección: entre 10 y 255 caracteres
+   * - Fecha de fundación: obligatoria y no puede ser futura
+   * - Presupuesto: no puede ser negativo
+   *
+   * @returns {boolean} true si todos los campos son válidos, false en caso contrario
+   */
+  const validarDatos = () => {
+    let isValid = true;
+    let objetoValidacion = {
+      nombre: true,
+      descripcion: true,
+      direccion: true,
+      fecha_fundacion: true,
+    };
+
+    // Validacion del nombre (mínimo 3 caracteres, máximo 100)
+    if (club.nombre.trim().length &lt; 3 || club.nombre.trim().length > 100) {
+      isValid = false;
+      objetoValidacion.nombre = false;
+    }
+
+    // Validacion de la fecha de fundacion
+    if (!club.fecha_fundacion) {
+      isValid = false;
+      objetoValidacion.fecha_fundacion = false;
+    } else {
+      // Verificar que la fecha no sea futura
+      const fechaSeleccionada = new Date(club.fecha_fundacion);
+      const hoy = new Date();
+      if (fechaSeleccionada > hoy) {
+        isValid = false;
+        objetoValidacion.fecha_fundacion = false;
+      }
+    }
+
+    // Validacion de la descripcion (mínimo 10 caracteres, máximo 500)
+    if (
+      club.descripcion.trim().length &lt; 10 ||
+      club.descripcion.trim().length > 500
+    ) {
+      isValid = false;
+      objetoValidacion.descripcion = false;
+    }
+
+    // Validacion de la direccion (mínimo 10 y máximo 255)
+    if (
+      club.direccion.trim().length &lt; 10 ||
+      club.direccion.trim().length > 255
+    ) {
+      isValid = false;
+      objetoValidacion.direccion = false;
+    }
+
+    // Validación del presupuesto (no puede ser negativo)
+    if (club.presupuesto_anual &lt; 0) {
+      isValid = false;
+    }
+
+    // Actualizar el estado de validación para mostrar errores en el UI
+    setIsCamposValidos(objetoValidacion);
+    return isValid;
+  };
+
+  return (
+    &lt;>
+      &lt;Container maxWidth="md">
+        &lt;Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
+          &lt;Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            color="primary"
+            align="center"
+            sx={{ mb: 3 }}
+          >
+            Alta de Club
+          &lt;/Typography>
+
+          &lt;Grid container spacing={3}>
+            &lt;Grid item xs={12} md={6}>
+              &lt;TextField
+                required
+                fullWidth
+                autoFocus
+                id="nombre"
+                label="Nombre"
+                name="nombre"
+                type="text"
+                maxLength="100"
+                value={club.nombre}
+                onChange={handleChange}
+                error={!isCamposValidos.nombre}
+                helperText={
+                  !isCamposValidos.nombre &amp;&amp;
+                  "El nombre debe tener entre 3 y 100 caracteres."
+                }
+              />
+            &lt;/Grid>
+            &lt;Grid item xs={12} md={6}>
+              &lt;Box sx={{ minWidth: 120 }}>
+                &lt;FormControl fullWidth>
+                  &lt;InputLabel id="rama">Rama&lt;/InputLabel>
+                  &lt;Select
+                    labelId="rama"
+                    id="rama"
+                    name="id_rama"
+                    value={club.id_rama}
+                    label="Rama"
+                    onChange={handleChange}
+                  >
+                    {ramas.map((rama) => (
+                      &lt;MenuItem key={rama.id_rama} value={rama.id_rama}>
+                        {rama.nombre_rama}
+                      &lt;/MenuItem>
+                    ))}
+                  &lt;/Select>
+                &lt;/FormControl>
+              &lt;/Box>
+            &lt;/Grid>
+            &lt;Grid item xs={12} md={6}>
+              &lt;LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="es"
+              >
+                &lt;DatePicker
+                  label="Fecha de Fundación"
+                  name="fecha_fundacion"
+                  value={
+                    club.fecha_fundacion ? dayjs(club.fecha_fundacion) : null
+                  }
+                  disableFuture
+                  slotProps={{ textField: { fullWidth: true } }}
+                  onChange={(newValue) => {
+                    setClub({
+                      ...club,
+                      fecha_fundacion: newValue
+                        ? newValue.format("YYYY-MM-DD")
+                        : "",
+                    });
+                  }}
+                />
+              &lt;/LocalizationProvider>
+            &lt;/Grid>
+            &lt;Grid item xs={12} md={6}>
+              &lt;TextField
+                fullWidth
+                id="presupuesto_anual"
+                label="Presupuesto Anual"
+                name="presupuesto_anual"
+                type="number"
+                value={club.presupuesto_anual}
+                onChange={handleChange}
+                inputProps={{ min: "0", step: "0.01" }}
+              />
+            &lt;/Grid>
+            &lt;Grid item xs={12}>
+              &lt;TextField
+                required
+                fullWidth
+                id="descripcion"
+                label="Descripción"
+                name="descripcion"
+                type="text"
+                multiline
+                rows={4}
+                maxLength="2000"
+                value={club.descripcion}
+                onChange={handleChange}
+                error={!isCamposValidos.descripcion}
+                helperText={
+                  !isCamposValidos.descripcion &amp;&amp;
+                  "La descripción debe tener entre 10 y 500 caracteres."
+                }
+              />
+            &lt;/Grid>
+            &lt;Grid item xs={12}>
+              &lt;TextField
+                required
+                fullWidth
+                id="direccion"
+                label="Direccion"
+                name="direccion"
+                type="text"
+                maxLength="255"
+                value={club.direccion}
+                onChange={handleChange}
+                error={!isCamposValidos.direccion}
+                helperText={
+                  !isCamposValidos.direccion &amp;&amp;
+                  "La dirección debe tener entre 10 y 255 caracteres."
+                }
+              />
+            &lt;/Grid>
+            &lt;Grid item xs={12}>
+              &lt;FormControlLabel
+                control={
+                  &lt;Checkbox
+                    checked={club.esta_activo}
+                    onChange={handleChange}
+                    name="esta_activo"
+                    color="primary"
+                  />
+                }
+                label="Está Activo"
+              />
+            &lt;/Grid>
+          &lt;/Grid>
+          &lt;Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            &lt;Button
+              variant="contained"
+              size="large"
+              onClick={handleClick}
+              startIcon={&lt;SaveIcon />}
+            >
+              Aceptar
+            &lt;/Button>
+          &lt;/Box>
+        &lt;/Paper>
+      &lt;/Container>
+
+      &lt;Dialog
+        open={openDialog}
+        onClose={handleDialogClose}
+        disableEscapeKeyDown
+        aria-labelledby="result-dialog-title"
+      >
+        &lt;DialogTitle id="result-dialog-title">
+          {dialogSeverity === "success" ? "Operación correcta" : "Error"}
+        &lt;/DialogTitle>
+        &lt;DialogContent dividers>
+          &lt;Alert severity={dialogSeverity} variant="filled">
+            {dialogMessage}
+          &lt;/Alert>
+        &lt;/DialogContent>
+        &lt;DialogActions>
+          &lt;Button onClick={handleDialogClose}>OK&lt;/Button>
+        &lt;/DialogActions>
+      &lt;/Dialog>
+    &lt;/>
+  );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#App">App</a></li><li><a href="global.html#ColorModeContext">ColorModeContext</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ListadoClubs">ListadoClubs</a></li><li><a href="global.html#api">api</a></li><li><a href="global.html#generatePDF">generatePDF</a></li><li><a href="global.html#getTheme">getTheme</a></li><li><a href="global.html#toggleColorMode">toggleColorMode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Jan 24 2026 14:46:28 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
