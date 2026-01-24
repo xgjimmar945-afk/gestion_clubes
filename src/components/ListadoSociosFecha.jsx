@@ -11,6 +11,8 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import Fab from "@mui/material/Fab";
+import DownloadIcon from "@mui/icons-material/Download";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -21,6 +23,10 @@ import "dayjs/locale/es";
 import api from "../api";
 import BotonEditar from "./BotonEditar";
 import BotonBorrar from "./BotonBorrar";
+
+import { PDFDownloadLink } from "@react-pdf/renderer";
+
+import ListadoSociosFechaPDF from "./ListadoSociosFechaPDF";
 
 function ListadoSociosFecha() {
   const [datos, setDatos] = useState([]);
@@ -60,7 +66,7 @@ function ListadoSociosFecha() {
       const fFin = fechaFin.format("YYYY-MM-DD");
 
       const response = await api.get(
-        `/socios/rango-fecha?fechaInicio=${fInicio}&fechaFin=${fFin}`
+        `/socios/rango-fecha?fechaInicio=${fInicio}&fechaFin=${fFin}`,
       );
 
       if (response.ok) {
@@ -216,6 +222,39 @@ function ListadoSociosFecha() {
             </TableBody>
           </Table>
         </TableContainer>
+      )}
+
+      {datos && datos.length > 0 && (
+        <Fab
+          aria-label="descargar"
+          color="secondary"
+          sx={{
+            position: "fixed",
+            top: 85,
+            right: 20,
+          }}
+        >
+          <PDFDownloadLink
+            document={<ListadoSociosFechaPDF data={datos} />}
+            fileName="socios.pdf"
+          >
+            {({ loading }) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {loading ? (
+                  <Typography sx={{ fontSize: 12 }}>...</Typography>
+                ) : (
+                  <DownloadIcon />
+                )}
+              </Box>
+            )}
+          </PDFDownloadLink>
+        </Fab>
       )}
     </Container>
   );
