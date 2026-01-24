@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente para editar un club existente en el sistema.
+ * Carga los datos del club desde el backend y permite modificarlos.
+ */
+
 import { useState, useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -23,8 +28,28 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { useParams } from "react-router-dom";
 
+/**
+ * Componente de formulario para editar un club existente.
+ *
+ * Funcionalidades:
+ * - Carga los datos del club desde el backend usando el ID de la URL
+ * - Formulario pre-rellenado con los datos actuales
+ * - Validaciones en tiempo real
+ * - Actualización de datos mediante API PUT
+ * - Navegación automática tras actualización exitosa
+ *
+ * @component
+ * @returns {JSX.Element} Formulario de edición de club
+ */
 export default function EditarClub() {
+  // Obtener el ID del club desde los parámetros de la URL
   const { id } = useParams();
+
+  /**
+   * Estado del club que se está editando.
+   * Se inicializa vacío y se rellena al cargar los datos del backend.
+   * @type {Object}
+   */
   const [club, setClub] = useState({
     nombre: "",
     id_rama: "",
@@ -35,7 +60,13 @@ export default function EditarClub() {
     esta_activo: true,
   });
 
+  // Hook de navegación para redireccionar tras actualización exitosa
   const navigate = useNavigate();
+
+  /**
+   * Estado de validación de cada campo del formulario.
+   * @type {Object}
+   */
   const [isCamposValidos, setIsCamposValidos] = useState({
     nombre: true,
     id_rama: true,
@@ -44,11 +75,18 @@ export default function EditarClub() {
     fecha_fundacion: true,
   });
 
+  // Estado para la rama seleccionada
   const [rama, setRama] = useState("");
+  // Lista de ramas disponibles
   const [ramas, setRamas] = useState([]);
+  // Estado para manejar errores
   const [isError, setIsError] = useState(null);
+  // Estado para controlar si se está enviando la actualización
   const [isUpdating, setIsUpdating] = useState(false);
 
+  /**
+   * Effect para cargar las ramas disponibles al montar el componente.
+   */
   useEffect(() => {
     async function fetchRamas() {
       try {
@@ -58,6 +96,7 @@ export default function EditarClub() {
           const datos = respuesta.datos;
 
           setRamas(datos);
+          // Seleccionar la primera rama por defecto si existe
           if (datos.length > 0) {
             setRama(datos[0].id_rama);
           }
@@ -72,6 +111,10 @@ export default function EditarClub() {
     fetchRamas();
   }, []);
 
+  /**
+   * Effect para cargar los datos del club cuando cambia el ID.
+   * Se ejecuta al montar el componente y cuando el ID de la URL cambia.
+   */
   useEffect(() => {
     async function fetchClub() {
       try {
@@ -80,6 +123,7 @@ export default function EditarClub() {
         if (respuesta.ok) {
           const datos = respuesta.datos;
 
+          // Actualizar el estado con los datos del club
           setClub(datos);
         } else {
           setIsError("Hubo un error al obtener el club");
@@ -90,8 +134,12 @@ export default function EditarClub() {
     }
 
     fetchClub();
-  }, [id]);
+  }, [id]); // Re-ejecutar si cambia el ID
 
+  /**
+   * Manejador de cambios en los campos del formulario.
+   * @param {Event} event - Evento de cambio del input
+   */
   const handleChange = (event) => {
     const value =
       event.target.type === "checkbox"
@@ -103,12 +151,22 @@ export default function EditarClub() {
     });
   };
 
+  /**
+   * Manejador del clic en el botón de guardar.
+   * Valida los datos antes de iniciar la actualización.
+   * @param {Event} event - Evento de clic
+   */
   const handleClick = (event) => {
     if (validarDatos()) {
       setIsUpdating(true);
     }
   };
 
+  /**
+   * Valida todos los campos del formulario antes de actualizar.
+   * Aplica las mismas reglas que en el alta de club.
+   * @returns {boolean} true si todos los campos son válidos
+   */
   const validarDatos = () => {
     let isValid = true;
     let objetoValidacion = {
@@ -156,6 +214,7 @@ export default function EditarClub() {
       objetoValidacion.direccion = false;
     }
 
+    // Validación del presupuesto (no negativo)
     if (club.presupuesto_anual < 0) {
       isValid = false;
     }
@@ -164,6 +223,10 @@ export default function EditarClub() {
     return isValid;
   };
 
+  /**
+   * Effect para verificar que el club se haya cargado correctamente.
+   * Muestra un mensaje de error si el club es null.
+   */
   useEffect(() => {
     if (club == null) {
       return (
@@ -174,12 +237,17 @@ export default function EditarClub() {
     }
   }, [club]);
 
+  /**
+   * Effect para actualizar el club cuando isUpdating cambia a true.
+   * Envía una petición PUT al backend con los datos modificados.
+   */
   useEffect(() => {
     async function fetchEditarClub() {
       try {
         let respuesta = await api.put(`clubs/${id}`, club);
 
         if (respuesta.ok) {
+          // Redirigir al listado de clubes tras actualización exitosa
           navigate("/clubs");
         } else {
           setIsError("Hubo un error al obtener el club");
@@ -191,7 +259,7 @@ export default function EditarClub() {
     }
 
     if (isUpdating) fetchEditarClub();
-  }, [isUpdating, id]);
+  }, [isUpdating, id]); // Re-ejecutar si cambia isUpdating o id
 
   return (
     <Container maxWidth="md">

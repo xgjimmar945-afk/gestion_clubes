@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente para buscar clubes filtrados por rama científica.
+ * Permite seleccionar una rama y muestra los clubes asociados en una tabla.
+ */
+
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
@@ -19,12 +24,31 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Container from "@mui/material/Container";
 
+/**
+ * Componente de búsqueda de clubes por rama científica.
+ *
+ * Funcionalidades:
+ * - Selector de rama científica
+ * - Carga dinámica de clubes según la rama seleccionada
+ * - Tabla de resultados con información detallada de los clubes
+ * - Botón de búsqueda para mostrar/ocultar resultados
+ *
+ * @component
+ * @returns {JSX.Element} Interfaz de búsqueda de clubes
+ */
 export default function BusquedaClub() {
+  // Estado para la rama seleccionada
   const [rama, setRama] = useState("");
+  // Lista de todas las ramas disponibles
   const [ramas, setRamas] = useState([]);
+  // Estado para manejar errores de carga
   const [isError, setIsError] = useState(null);
+  // Estado para controlar si se deben mostrar los resultados
   const [isUpdating, setIsUpdating] = useState(false);
 
+  /**
+   * Effect para cargar las ramas disponibles al montar el componente.
+   */
   useEffect(() => {
     async function fetchRamas() {
       try {
@@ -34,6 +58,7 @@ export default function BusquedaClub() {
           const datos = respuesta.datos;
 
           setRamas(datos);
+          // Seleccionar automáticamente la primera rama
           if (datos.length > 0) {
             setRama(datos[0].id_rama);
           }
@@ -48,23 +73,37 @@ export default function BusquedaClub() {
     fetchRamas();
   }, []);
 
+  /**
+   * Manejador del cambio de rama seleccionada.
+   * Oculta los resultados cuando se cambia la rama.
+   * @param {Event} event - Evento de cambio del selector
+   */
   const handleChangeRama = (event) => {
     setRama(event.target.value);
+    // Ocultar resultados al cambiar de rama
     setIsUpdating(false);
   };
 
+  // Estado para el club seleccionado (no utilizado actualmente)
   const [club, setClub] = useState("");
+  // Lista de clubes filtrados por la rama seleccionada
   const [clubs, setClubs] = useState([]);
 
+  /**
+   * Effect para cargar los clubes cuando cambia la rama seleccionada.
+   * Se ejecuta automáticamente cada vez que se selecciona una rama diferente.
+   */
   useEffect(() => {
     async function fetchClubs() {
       try {
+        // Obtener clubes filtrados por rama
         const respuesta = await api.get(`/clubs/ramas/${rama}`);
 
         if (respuesta.ok) {
           const datos = respuesta.datos;
 
           setClubs(datos);
+          // Seleccionar el primer club si existe
           if (datos.length > 0) {
             setClub(datos[0].id_club);
           }
@@ -77,8 +116,12 @@ export default function BusquedaClub() {
     }
 
     fetchClubs();
-  }, [rama]);
+  }, [rama]); // Re-ejecutar cuando cambia la rama
 
+  /**
+   * Manejador del clic en el botón de buscar.
+   * Muestra la tabla de resultados.
+   */
   const handleClick = () => {
     setIsUpdating(true);
   };

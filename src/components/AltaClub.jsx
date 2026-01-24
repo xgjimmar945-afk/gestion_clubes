@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente para dar de alta un nuevo club en el sistema.
+ * Proporciona un formulario completo con validaciones para crear clubes.
+ */
+
 import { useState, useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -28,8 +33,29 @@ import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 
+/**
+ * Componente de formulario para dar de alta un nuevo club.
+ *
+ * Funcionalidades:
+ * - Formulario con validaciones en tiempo real
+ * - Selección de rama/temática desde el backend
+ * - Selector de fecha con restricción de fechas futuras
+ * - Validación de campos obligatorios y longitudes
+ * - Diálogo de confirmación con resultado de la operación
+ * - Navegación automática tras éxito
+ *
+ * @component
+ * @returns {JSX.Element} Formulario de alta de club
+ */
 export default function AltaClub() {
+  // Hook de navegación para redireccionar tras operaciones exitosas
   const navigate = useNavigate();
+
+  /**
+   * Estado del club que se está creando.
+   * Contiene todos los campos del formulario.
+   * @type {Object}
+   */
   const [club, setClub] = useState({
     nombre: "",
     id_rama: "",
@@ -39,6 +65,12 @@ export default function AltaClub() {
     presupuesto_anual: 0,
     esta_activo: true,
   });
+
+  /**
+   * Estado de validación de cada campo del formulario.
+   * Se actualiza al intentar enviar el formulario.
+   * @type {Object}
+   */
   const [isCamposValidos, setIsCamposValidos] = useState({
     nombre: true,
     id_rama: true,
@@ -47,11 +79,22 @@ export default function AltaClub() {
     fecha_fundacion: true,
   });
 
+  // Estado para la rama seleccionada actualmente
   const [rama, setRama] = useState("");
+  // Lista de ramas/temáticas disponibles obtenidas del backend
   const [ramas, setRamas] = useState([]);
+  // Estado para manejar errores de carga
   const [isError, setIsError] = useState(null);
 
+  /**
+   * Effect para cargar las ramas/temáticas disponibles al montar el componente.
+   * Se ejecuta una sola vez al inicio.
+   */
   useEffect(() => {
+    /**
+     * Función asíncrona para obtener las ramas desde el backend.
+     * Actualiza el estado de ramas y selecciona la primera por defecto.
+     */
     async function fetchRamas() {
       try {
         const respuesta = await api.get("/ramas");
@@ -61,6 +104,7 @@ export default function AltaClub() {
 
           setRamas(datos);
 
+          // Seleccionar automáticamente la primera rama si existe
           if (datos.length > 0) {
             setRama(datos[0].id_rama);
           }
@@ -75,12 +119,24 @@ export default function AltaClub() {
     fetchRamas();
   }, []);
 
+  // Estado para controlar si se está enviando la petición al servidor
   const [isUpdating, setIsUpdating] = useState(false);
+  // Estado para controlar la visibilidad del diálogo de resultado
   const [openDialog, setOpenDialog] = useState(false);
+  // Mensaje a mostrar en el diálogo
   const [dialogMessage, setDialogMessage] = useState("");
+  // Severidad del diálogo (success, error, warning, info)
   const [dialogSeverity, setDialogSeverity] = useState("success");
 
+  /**
+   * Effect para crear el club cuando isUpdating cambia a true.
+   * Se ejecuta después de que la validación sea exitosa.
+   */
   useEffect(() => {
+    /**
+     * Función asíncrona para enviar los datos del club al backend.
+     * Maneja la respuesta y muestra el diálogo correspondiente.
+     */
     async function fetchCreateClub() {
       try {
         const respuesta = await api.post("/clubs", club);
@@ -99,13 +155,22 @@ export default function AltaClub() {
         setDialogSeverity("error");
         setOpenDialog(true);
       }
+      // Resetear el estado de actualización
       setIsUpdating(false);
     }
 
+    // Solo ejecutar si isUpdating es true
     if (isUpdating) fetchCreateClub();
   }, [isUpdating]);
 
+  /**
+   * Manejador de cambios en los campos del formulario.
+   * Actualiza el estado del club con el nuevo valor.
+   *
+   * @param {Event} event - Evento de cambio del input
+   */
   const handleChange = (event) => {
+    // Determinar el valor según el tipo de input (checkbox vs otros)
     const value =
       event.target.type === "checkbox"
         ? event.target.checked
@@ -116,20 +181,45 @@ export default function AltaClub() {
     });
   };
 
+  /**
+   * Manejador del clic en el botón de enviar.
+   * Valida los datos antes de iniciar el proceso de creación.
+   *
+   * @param {Event} event - Evento de clic del botón
+   */
   const handleClick = (event) => {
+    // Prevenir múltiples envíos simultáneos
     if (isUpdating) return;
 
+    // Solo proceder si la validación es exitosa
     if (validarDatos()) {
       setIsUpdating(true);
     }
   };
 
+  /**
+   * Manejador del cierre del diálogo de resultado.
+   * Si la operación fue exitosa, navega a la página principal.
+   */
   function handleDialogClose() {
     setOpenDialog(false);
 
+    // Redirigir a la página principal solo si la operación fue exitosa
     if (dialogSeverity === "success") navigate("/");
   }
 
+  /**
+   * Valida todos los campos del formulario antes de enviar.
+   *
+   * Reglas de validación:
+   * - Nombre: entre 3 y 100 caracteres
+   * - Descripción: entre 10 y 500 caracteres
+   * - Dirección: entre 10 y 255 caracteres
+   * - Fecha de fundación: obligatoria y no puede ser futura
+   * - Presupuesto: no puede ser negativo
+   *
+   * @returns {boolean} true si todos los campos son válidos, false en caso contrario
+   */
   const validarDatos = () => {
     let isValid = true;
     let objetoValidacion = {
@@ -168,7 +258,7 @@ export default function AltaClub() {
       objetoValidacion.descripcion = false;
     }
 
-    // Validacion de la direccion (mínimo 10 caracteres, máximo 255)
+    // Validacion de la direccion (mínimo 10 y máximo 255)
     if (
       club.direccion.trim().length < 10 ||
       club.direccion.trim().length > 255
@@ -177,10 +267,12 @@ export default function AltaClub() {
       objetoValidacion.direccion = false;
     }
 
+    // Validación del presupuesto (no puede ser negativo)
     if (club.presupuesto_anual < 0) {
       isValid = false;
     }
 
+    // Actualizar el estado de validación para mostrar errores en el UI
     setIsCamposValidos(objetoValidacion);
     return isValid;
   };

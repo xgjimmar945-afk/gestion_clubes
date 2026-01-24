@@ -100,6 +100,13 @@ function Navbar() {
                   </Typography>
                 </Link>
               </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Link to="/clubs/graph" style={linkStyle}>
+                  <Typography sx={{ textAlign: "center" }}>
+                    Gráfica de Clubes
+                  </Typography>
+                </Link>
+              </MenuItem>
               <Divider />
               <ListSubheader>Menú Socios</ListSubheader>
               <MenuItem onClick={handleCloseNavMenu}>
@@ -195,6 +202,13 @@ function Navbar() {
                 <Link to="/clubs/buscar" style={linkStyle}>
                   <Typography sx={{ textAlign: "center" }}>
                     Buscar Clubes
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Link to="/clubs/graph" style={linkStyle}>
+                  <Typography sx={{ textAlign: "center" }}>
+                    Gráfica de Clubes
                   </Typography>
                 </Link>
               </MenuItem>

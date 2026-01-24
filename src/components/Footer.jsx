@@ -1,9 +1,26 @@
+/**
+ * @fileoverview Componente de pie de página de la aplicación.
+ * Muestra información de copyright y branding.
+ */
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 
+/**
+ * Componente de pie de página (footer) de la aplicación.
+ *
+ * Características:
+ * - Fondo con color primario del tema
+ * - Texto en blanco para contraste
+ * - Copyright dinámico con año actual
+ * - Posicionamiento automático al final de la página
+ *
+ * @component
+ * @returns {JSX.Element} Pie de página de la aplicación
+ */
 function Footer() {
   return (
     <Box

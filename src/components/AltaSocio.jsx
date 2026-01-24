@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente para dar de alta un nuevo socio en el sistema.
+ * Proporciona un formulario completo con validaciones para crear socios asociados a clubes.
+ */
+
 import { useState, useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -31,8 +36,29 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import SaveIcon from "@mui/icons-material/Save";
 
+/**
+ * Componente de formulario para dar de alta un nuevo socio.
+ *
+ * Funcionalidades:
+ * - Formulario con validaciones personalizadas (email, nombres sin números, altura)
+ * - Selección de club desde el catálogo
+ * - Selector de fecha de nacimiento con restricción de fechas futuras
+ * - Validación de formato de email
+ * - Diálogo de confirmación con resultado de la operación
+ * - Navegación automática tras éxito
+ *
+ * @component
+ * @returns {JSX.Element} Formulario de alta de socio
+ */
 export default function AltaSocio() {
+  // Hook de navegación para redireccionar tras operaciones exitosas
   const navigate = useNavigate();
+
+  /**
+   * Estado del socio que se está creando.
+   * Contiene todos los campos del formulario.
+   * @type {Object}
+   */
   const [socio, setSocio] = useState({
     nombre: "",
     apellido: "",
@@ -42,6 +68,11 @@ export default function AltaSocio() {
     altura_metros: "",
     ha_pagado_cuota: false,
   });
+
+  /**
+   * Estado de validación de cada campo del formulario.
+   * @type {Object}
+   */
   const [isCamposValidos, setIsCamposValidos] = useState({
     nombre: true,
     apellido: true,
@@ -49,10 +80,16 @@ export default function AltaSocio() {
     id_club: true,
   });
 
+  // Estado para el club seleccionado
   const [club, setClub] = useState("");
+  // Lista de clubes disponibles
   const [clubs, setClubs] = useState([]);
+  // Estado para manejar errores de carga
   const [isError, setIsError] = useState(null);
 
+  /**
+   * Effect para cargar los clubes disponibles al montar el componente.
+   */
   useEffect(() => {
     async function fetchClubs() {
       try {
@@ -62,6 +99,7 @@ export default function AltaSocio() {
           const datos = respuesta.datos;
 
           setClubs(datos);
+          // Seleccionar automáticamente el primer club
           if (datos.length > 0) {
             setClub(datos[0].id_club);
           }
@@ -76,9 +114,13 @@ export default function AltaSocio() {
     fetchClubs();
   }, []);
 
+  // Estado para controlar si se está enviando la petición
   const [isUpdating, setIsUpdating] = useState(false);
+  // Estado para controlar la visibilidad del diálogo
   const [openDialog, setOpenDialog] = useState(false);
+  // Mensaje a mostrar en el diálogo
   const [dialogMessage, setDialogMessage] = useState("");
+  // Severidad del diálogo (success/error)
   const [dialogSeverity, setDialogSeverity] = useState("success");
 
   useEffect(() => {
@@ -132,6 +174,17 @@ export default function AltaSocio() {
     if (dialogSeverity === "success") navigate("/");
   }
 
+  /**
+   * Valida todos los campos del formulario antes de enviar.
+   *
+   * Reglas de validación:
+   * - Nombre y apellido: entre 2 y 50 caracteres, sin números
+   * - Email: formato válido y máximo 100 caracteres
+   * - Fecha de nacimiento: obligatoria
+   * - Altura: entre 0 y 3 metros (opcional)
+   *
+   * @returns {boolean} true si todos los campos son válidos
+   */
   const validarDatos = () => {
     let isValid = true;
     let objetoValidacion = {
@@ -140,12 +193,20 @@ export default function AltaSocio() {
       email: true,
     };
 
-    // Funcion para comprobar que no hayan numeros en el texto
+    /**
+     * Función auxiliar para comprobar que no hayan números en el texto.
+     * @param {string} texto - Texto a validar
+     * @returns {boolean} true si contiene números
+     */
     function tiene_numeros(texto) {
       return /\d/.test(texto);
     }
 
-    // Funcion para validar formato de email
+    /**
+     * Función auxiliar para validar formato de email.
+     * @param {string} email - Email a validar
+     * @returns {boolean} true si el formato es válido
+     */
     function validar_email(email) {
       const res = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return res.test(email);
@@ -177,10 +238,12 @@ export default function AltaSocio() {
       objetoValidacion.email = false;
     }
 
+    // Validación de fecha de nacimiento (obligatoria)
     if (!socio.fecha_nacimiento) {
       isValid = false;
     }
 
+    // Validación de altura (opcional, pero si se proporciona debe estar entre 0 y 3)
     if (
       socio.altura_metros &&
       (socio.altura_metros < 0 || socio.altura_metros > 3)
