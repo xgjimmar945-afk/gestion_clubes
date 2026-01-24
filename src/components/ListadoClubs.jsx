@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente para mostrar el listado completo de clubes.
+ * Incluye funcionalidad de edición, eliminación e impresión.
+ */
+
 import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -7,6 +12,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+import Fab from "@mui/material/Fab";
+import DownloadIcon from "@mui/icons-material/Download";
 import BotonBorrar from "./BotonBorrar";
 import BotonEditar from "./BotonEditar";
 
@@ -14,14 +21,38 @@ import api from "../api";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 
+import styles from "../css/Impresion.module.css";
+
+/**
+ * Componente de listado de todos los clubes del sistema.
+ *
+ * Funcionalidades:
+ * - Tabla con todos los clubes y su información completa
+ * - Botones de acción para editar y eliminar cada club
+ * - Botón flotante para imprimir el listado
+ * - Manejo de errores de carga
+ * - Resolución de nombres de ramas desde el catálogo
+ *
+ * @component
+ * @returns {JSX.Element} Tabla de listado de clubes
+ */
 function ListadoClubs() {
+  // Lista de clubes obtenida del backend
   const [datos, setDatos] = useState([]);
+  // Estado para manejar errores de carga de clubes
   const [error, setError] = useState(null);
 
+  // Estado para la rama seleccionada (usado para resolver nombres)
   const [rama, setRama] = useState("");
+  // Lista de todas las ramas para mostrar nombres en lugar de IDs
   const [ramas, setRamas] = useState([]);
+  // Estado para manejar errores de carga de ramas
   const [isError, setIsError] = useState(null);
 
+  /**
+   * Effect para cargar las ramas disponibles al montar el componente.
+   * Las ramas se usan para mostrar el nombre en lugar del ID en la tabla.
+   */
   useEffect(() => {
     async function fetchRamas() {
       try {
@@ -38,7 +69,7 @@ function ListadoClubs() {
         }
       } catch (error) {
         setIsError(
-          error.mensaje || "No pudimos hacer la solicitud de las temáticas"
+          error.mensaje || "No pudimos hacer la solicitud de las temáticas",
         );
       }
     }
@@ -46,6 +77,10 @@ function ListadoClubs() {
     fetchRamas();
   }, []);
 
+  /**
+   * Effect para cargar todos los clubes al montar el componente.
+   * Maneja errores y actualiza el estado correspondiente.
+   */
   useEffect(() => {
     async function fetchClubs() {
       try {
@@ -67,6 +102,7 @@ function ListadoClubs() {
     fetchClubs();
   }, []);
 
+  // Mostrar mensaje de error si hubo problemas al cargar los datos
   if (error != null) {
     return (
       <Container maxWidth="lg" sx={{ mt: 5 }}>
@@ -178,6 +214,19 @@ function ListadoClubs() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Fab
+        className={styles.noprint}
+        color="secondary"
+        aria-label="imprimir"
+        onClick={() => window.print()}
+        sx={{
+          position: "fixed",
+          top: 85,
+          right: 20,
+        }}
+      >
+        <DownloadIcon />
+      </Fab>
     </Container>
   );
 }
