@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import {
-  Pie,
-  PieChart,
-  Tooltip,
+  Bar,
   Cell,
+  BarChart,
+  CartesianGrid,
   Legend,
+  Tooltip,
+  XAxis,
+  YAxis,
   Text,
-  LabelList,
+  ResponsiveContainer,
 } from "recharts";
 
-import api from "../api";
-import { Box, Typography } from "@mui/material";
-import generatePDF from "../utils/generatePDF";
 import DownloadIcon from "@mui/icons-material/Download";
+import { Box, Typography } from "@mui/material";
 import Fab from "@mui/material/Fab";
+import { RechartsDevtools } from "@recharts/devtools";
+import api from "../api";
+
 
 function GraficaClubs() {
   const [datos, setDatos] = useState([]);
@@ -117,59 +121,68 @@ function GraficaClubs() {
         <Typography variant="h5" align="center" sx={{ mt: 3 }}>
           Número de socios por club
         </Typography>
-        <PieChart
-          style={{
-            width: "100%",
-            height: "100%",
-            //   maxWidth: "500px",
-            maxHeight: "80vh",
-            aspectRatio: 1,
-          }}
-          responsive
-        >
-          <Text value="Socios por club" offset={70} position="outside" />
-          <Pie
-            data={datos}
-            dataKey="total"
-            nameKey="id_club_CLUB.nombre"
-            cx="50%"
-            cy="50%"
-            innerRadius={20}
-            outerRadius="50%"
-            fill="#8884d8"
-            isAnimationActive={true}
-            label
-            legendType="circle"
-          >
-            {datos.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
+
+        <Box sx={{ width: "100%", height: 500 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={datos}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 40,
+                bottom: 70,
+              }}
+            >
+              <Text
+                value="Número de socios por club"
+                offset={70}
+                position="outside"
               />
-            ))}
-            <Tooltip />
-            <LabelList
-              dataKey="id_club_CLUB.nombre"
-              offset={70}
-              position="outside"
-            />
-          </Pie>
-          <Legend verticalAlign="top" height={50} />
-        </PieChart>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="id_club_CLUB.nombre"
+                angle={-30}
+                textAnchor="end"
+                interval={0}
+                tick={{
+                  fontSize: 15,
+                  fontWeight: "bold",
+                  fontFamily: "Arial",
+                  fontStyle: "italic",
+                }}
+                label={{
+                  value: "Clubes",
+                  position: "insideBottom",
+                  offset: -50,
+                }}
+              />
+              <YAxis
+                width={40}
+                label={{ value: "Socios", angle: -90, position: "insideLeft" }}
+              />
+              <Tooltip />
+              <Legend />
+              <Bar
+                dataKey="total"
+                radius={[10, 10, 0, 0]}
+                activeBar={{ fill: "gold", stroke: "purple" }}
+              >
+                {datos.map((entry, index) => (
+                  <>
+                    <Cell
+                      key={index.total}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  </>
+                ))}
+              </Bar>
+              <RechartsDevtools />
+            </BarChart>
+          </ResponsiveContainer>
+        </Box>
       </Box>
 
-      <Fab
-        color="secondary"
-        aria-label="imprimir"
-        onClick={() => generatePDF("pdf-content", "clubesgraph")}
-        sx={{
-          position: "fixed",
-          top: 85,
-          right: 20,
-        }}
-      >
-        <DownloadIcon />
-      </Fab>
+      
     </>
   );
 }

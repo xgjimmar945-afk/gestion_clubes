@@ -24,9 +24,9 @@ import api from "../api";
 import BotonEditar from "./BotonEditar";
 import BotonBorrar from "./BotonBorrar";
 
-import { PDFDownloadLink } from "@react-pdf/renderer";
 
-import ListadoSociosFechaPDF from "./ListadoSociosFechaPDF";
+
+
 
 function ListadoSociosFecha() {
   const [datos, setDatos] = useState([]);
@@ -222,39 +222,6 @@ function ListadoSociosFecha() {
             </TableBody>
           </Table>
         </TableContainer>
-      )}
-
-      {datos && datos.length > 0 && (
-        <Fab
-          aria-label="descargar"
-          color="secondary"
-          sx={{
-            position: "fixed",
-            top: 85,
-            right: 20,
-          }}
-        >
-          <PDFDownloadLink
-            document={<ListadoSociosFechaPDF data={datos} />}
-            fileName="socios.pdf"
-          >
-            {({ loading }) => (
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {loading ? (
-                  <Typography sx={{ fontSize: 12 }}>...</Typography>
-                ) : (
-                  <DownloadIcon />
-                )}
-              </Box>
-            )}
-          </PDFDownloadLink>
-        </Fab>
       )}
     </Container>
   );

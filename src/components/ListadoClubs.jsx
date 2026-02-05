@@ -16,12 +16,16 @@ import Fab from "@mui/material/Fab";
 import DownloadIcon from "@mui/icons-material/Download";
 import BotonBorrar from "./BotonBorrar";
 import BotonEditar from "./BotonEditar";
+import generatePDF from "../utils/generatePDF";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import ListadoSociosFechaPDF from "./ListadoClubsPDF";
 
 import api from "../api";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 
 import styles from "../css/Impresion.module.css";
+import ListadoClubsPDF from "./ListadoClubsPDF";
 
 /**
  * Componente de listado de todos los clubes del sistema.
@@ -225,8 +229,54 @@ function ListadoClubs() {
           right: 20,
         }}
       >
-        <DownloadIcon />
+        <Typography sx={{ fontSize: 12 }}>window</Typography>
       </Fab>
+      <Fab
+        color="secondary"
+        aria-label="imprimir"
+        onClick={() => generatePDF("pdf-content", "clubesgraph")}
+        sx={{
+          position: "fixed",
+          top: 85,
+          right: 80,
+        }}
+      >
+        <Typography sx={{ fontSize: 12 }}>Generate</Typography>
+      </Fab>
+
+      {datos && datos.length > 0 && (
+        <Fab
+          aria-label="descargar"
+          color="secondary"
+          sx={{
+            position: "fixed",
+            top: 85,
+            right: 140,
+          }}
+        >
+          <PDFDownloadLink
+            document={<ListadoClubsPDF data={datos} ramas={ramas} />}
+            fileName="clubes.pdf"
+          >
+            {({ loading }) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "secondary",
+                }}
+              >
+                {loading ? (
+                  <Typography sx={{ fontSize: 12 }}>...</Typography>
+                ) : (
+                  <Typography sx={{ fontSize: 12 }}>PDF</Typography>
+                )}
+              </Box>
+            )}
+          </PDFDownloadLink>
+        </Fab>
+      )}
     </Container>
   );
 }
