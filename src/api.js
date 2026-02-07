@@ -15,12 +15,12 @@ import axios from 'axios';
  * 
  * @type {import('axios').AxiosInstance}
  */
+const baseURL = window.__APP_CONFIG__
+    ? window.__APP_CONFIG__.API_URL
+    : "http://localhost:3000/api";
+
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api',
-    timeout: 5000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    baseURL: baseURL,
 });
 
 /**
