@@ -3,9 +3,15 @@ require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
 platform :ios, '13.0'
 use_frameworks!
 
-# Configuración para silenciar advertencias
+# Configuración para optimizar el build
 install! 'cocoapods', :disable_input_output_paths => true
 
 target 'App' do
-  capacitor_pods
+  # ESTA ES LA CLAVE: La sintaxis moderna
+  config = use_capacitor_pods!
+end
+
+# Bloque necesario para manejar permisos y configuraciones modernas
+post_install do |installer|
+  capacitor_pods_post_install(installer)
 end
