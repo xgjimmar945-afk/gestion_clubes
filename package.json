@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "postinstall": "npx cap update ios",
+    "build": "vite build && npx cap sync ios",
     "lint": "eslint .",
     "preview": "vite preview"
   },
