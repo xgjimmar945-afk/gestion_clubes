@@ -1,0 +1,12 @@
+require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+platform :ios, '13.0'
+use_frameworks!
+
+# Configuración para silenciar advertencias comunes
+install! 'cocoapods', :disable_input_output_paths => true
+
+target 'App' do
+  capacitor_pods
+  # Add your pods here
+end
