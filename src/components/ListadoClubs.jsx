@@ -131,8 +131,8 @@ function ListadoClubs() {
           Listado de Clubs
         </Typography>
       </Box>
-
-      <TableContainer component={Paper} elevation={4} sx={{ borderRadius: 2 }}>
+      
+      <TableContainer component={Paper} elevation={4} sx={{ borderRadius: 2 }} id="pdf-content">
         <Table aria-label="simple table">
           <TableHead sx={{ bgcolor: "primary.main" }}>
             <TableRow>
@@ -234,7 +234,7 @@ function ListadoClubs() {
       <Fab
         color="secondary"
         aria-label="imprimir"
-        onClick={() => generatePDF("pdf-content", "clubesgraph")}
+        onClick={() => generatePDF("pdf-content", "listado_clubs")}
         sx={{
           position: "fixed",
           top: 85,

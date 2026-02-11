@@ -20,9 +20,9 @@ import jsPDF from "jspdf";
  * @param {string} nombreDocumento - Nombre del archivo PDF a generar (sin extensión)
  * 
  * @example
- * // Generar PDF del elemento con id="listado-socios"
- * generatePDF("listado-socios", "socios_2024");
- * // Resultado: descarga el archivo "socios_2024.pdf"
+ * // Generar PDF del elemento con id="listado-clubs"
+ * generatePDF("listado-clubs", "clubs_2024");
+ * // Resultado: descarga el archivo "clubs_2024.pdf"
  */
 const generatePDF = (zonaImpresion, nombreDocumento) => {
   // Obtener el elemento HTML a capturar
