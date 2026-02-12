@@ -17,7 +17,8 @@ import axios from 'axios';
  */
 const baseURL = window.__APP_CONFIG__
     ? window.__APP_CONFIG__.API_URL
-    : "http://localhost:3000/api";
+    : "http://192.168.1.209:3000/api"; // IP DEL DISPOSITIVO EN EL QUE ESTAS
+    // "http://192.168.1.209:3000/api" PARA USAR EN MI PC
 
 const api = axios.create({
     baseURL: baseURL,
